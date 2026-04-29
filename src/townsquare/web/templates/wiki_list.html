@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Wiki · townsquare{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-semibold tracking-tight">Wiki</h1>
+    <a href="/wiki/new"
+       class="text-sm bg-slate-900 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition">
+      New page
+    </a>
+  </div>
+  <p class="text-slate-500 mt-2">Shared org-level pages. The agent reads + writes here.</p>
+
+  {% if pages %}
+  <ul class="mt-8 divide-y divide-slate-200 bg-white rounded-xl border border-slate-200">
+    {% for page in pages %}
+    <li class="px-5 py-4">
+      <a href="/wiki/{{ page.slug }}" class="font-medium hover:text-slate-700">{{ page.title }}</a>
+      <div class="text-xs text-slate-500 mt-1">
+        {{ page.slug }} · v{{ page.version }} · edited {{ page.last_edited_at.strftime("%Y-%m-%d") }}{% if page.last_edited_by %} by {{ page.last_edited_by }}{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="mt-8 bg-white border border-slate-200 rounded-xl p-10 text-center">
+    <p class="text-slate-500">No wiki pages yet. <a href="/wiki/new" class="text-slate-900 underline">Create the first one</a>.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Edit · {{ page.title if page else "New page" }} · townsquare{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <a href="/wiki" class="text-sm text-slate-500 hover:text-slate-700">← All pages</a>
+  <h1 class="text-3xl font-semibold tracking-tight mt-4">{{ "Edit" if page else "New page" }}</h1>
+
+  <form method="POST" action="{{ '/wiki/' + page.slug + '/edit' if page else '/wiki/new' }}" class="mt-8 space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-slate-700">Slug</label>
+      <input name="slug" type="text" value="{{ page.slug if page else '' }}"
+             {% if page %}readonly{% endif %} required pattern="[a-z0-9-]+"
+             class="mt-1 w-full p-3 border border-slate-300 rounded-lg {% if page %}bg-slate-50 text-slate-500{% endif %}">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-700">Title</label>
+      <input name="title" type="text" value="{{ page.title if page else '' }}" required
+             class="mt-1 w-full p-3 border border-slate-300 rounded-lg">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-700">Body (markdown)</label>
+      <textarea name="body" rows="20" required
+                class="mt-1 w-full p-3 border border-slate-300 rounded-lg font-mono text-sm">{{ page.body_markdown if page else '' }}</textarea>
+    </div>
+    <div class="flex items-center justify-between">
+      <a href="/wiki{% if page %}/{{ page.slug }}{% endif %}" class="text-sm text-slate-500 hover:text-slate-700">Cancel</a>
+      <button type="submit"
+              class="bg-slate-900 hover:bg-slate-700 text-white px-6 py-2 rounded-lg font-medium transition">
+        Save
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Ask · townsquare{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <h1 class="text-3xl font-semibold tracking-tight">Ask your company.</h1>
+  <p class="text-slate-500 mt-2">Federated query across {{ user_count }} {{ "person" if user_count == 1 else "people" }} at {{ workspace_domain }}.</p>
+
+  <form hx-post="/ask" hx-target="#answer" hx-swap="innerHTML" hx-indicator="#thinking" class="mt-8">
+    <textarea name="question" rows="3" required
+              class="w-full p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-400 focus:outline-none text-base"
+              placeholder="What's the status of the Q3 launch? Who's working on auth refactor? When was our last conversation with Acme Corp?"></textarea>
+    <div class="flex items-center justify-between mt-3">
+      <p class="text-xs text-slate-400">
+        Each query runs under each user's own credentials. Per-user privacy preserved at the source.
+      </p>
+      <button type="submit"
+              class="bg-slate-900 hover:bg-slate-700 text-white px-6 py-2 rounded-lg font-medium transition">
+        Ask
+      </button>
+    </div>
+  </form>
+
+  <div id="thinking" class="htmx-indicator text-sm text-slate-500 mt-6">
+    <span class="inline-block animate-pulse">querying {{ user_count }} {{ "person" if user_count == 1 else "people" }}…</span>
+  </div>
+
+  <div id="answer" class="mt-8"></div>
+
+  {% if recent_queries %}
+  <div class="mt-12">
+    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Recent</h2>
+    <ul class="mt-3 space-y-2 text-sm">
+      {% for q in recent_queries %}
+      <li class="text-slate-600 hover:text-slate-900">
+        <a href="/queries/{{ q.id }}">{{ q.query_text[:120] }}{% if q.query_text|length > 120 %}…{% endif %}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

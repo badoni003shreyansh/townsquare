@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} · Wiki · townsquare{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <a href="/wiki" class="text-sm text-slate-500 hover:text-slate-700">← All pages</a>
+  <div class="mt-4 flex items-center justify-between">
+    <h1 class="text-3xl font-semibold tracking-tight">{{ page.title }}</h1>
+    <a href="/wiki/{{ page.slug }}/edit"
+       class="text-sm bg-white border border-slate-300 hover:border-slate-500 text-slate-700 px-4 py-2 rounded-lg transition">
+      Edit
+    </a>
+  </div>
+  <div class="text-xs text-slate-500 mt-1">v{{ page.version }} · last edited {{ page.last_edited_at.strftime("%Y-%m-%d %H:%M") }}{% if page.last_edited_by %} by {{ page.last_edited_by }}{% endif %}</div>
+  <article class="mt-8 bg-white border border-slate-200 rounded-xl p-8 prose prose-slate max-w-none whitespace-pre-wrap">{{ page.body_markdown }}</article>
+</div>
+{% endblock %}

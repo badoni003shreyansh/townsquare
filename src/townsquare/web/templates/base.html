@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}townsquare{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+  <script src="https://unpkg.com/htmx-ext-sse@2.2.2/sse.js"></script>
+  <style>
+    :root { color-scheme: light; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  {% if user %}
+  <nav class="bg-white border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg tracking-tight">townsquare</a>
+      <div class="flex items-center space-x-6 text-sm">
+        <a href="/" class="text-slate-700 hover:text-slate-900">Ask</a>
+        <a href="/wiki" class="text-slate-700 hover:text-slate-900">Wiki</a>
+        <a href="/connections" class="text-slate-700 hover:text-slate-900">Connections</a>
+        <span class="text-slate-400">|</span>
+        <span class="text-slate-600">{{ user.name or user.email }}</span>
+        <a href="/logout" class="text-slate-500 hover:text-slate-700">Logout</a>
+      </div>
+    </div>
+  </nav>
+  {% endif %}
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="max-w-6xl mx-auto px-6 py-8 text-xs text-slate-400">
+    townsquare v{{ version }} · self-hosted at {{ workspace_domain or 'localhost' }} · Apache 2.0
+  </footer>
+</body>
+</html>

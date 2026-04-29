@@ -6,5 +6,6 @@ user's plaintext token.
 """
 
 from townsquare.federation.router import FanoutResult, FanoutTarget, FederatedRouter
+from townsquare.federation.selector import Selector
 
-__all__ = ["FederatedRouter", "FanoutTarget", "FanoutResult"]
+__all__ = ["FederatedRouter", "FanoutTarget", "FanoutResult", "Selector"]

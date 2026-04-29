@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Connections · townsquare{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <h1 class="text-3xl font-semibold tracking-tight">Your connections</h1>
+  <p class="text-slate-500 mt-2">
+    Each connection is yours alone. Admins cannot see your data — only that you connected this source.
+  </p>
+
+  <div class="mt-8 space-y-3">
+    {% for source in all_sources %}
+    {% set conn = connections.get(source.id) %}
+    <div class="bg-white rounded-xl border border-slate-200 p-5 flex items-center justify-between">
+      <div>
+        <div class="font-medium">{{ source.name }}</div>
+        <div class="text-sm text-slate-500">{{ source.description }}</div>
+      </div>
+      {% if conn and conn.is_active %}
+      <span class="inline-flex items-center text-sm text-green-700 bg-green-50 px-3 py-1 rounded-full">
+        ● connected
+      </span>
+      {% elif source.connect_url %}
+      <a href="{{ source.connect_url }}"
+         class="text-sm bg-slate-900 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition">
+        Connect
+      </a>
+      {% else %}
+      <span class="text-sm text-slate-400">coming soon</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <p class="text-xs text-slate-400 mt-8">
+    Tip: Gmail, Drive and Calendar were granted at sign-in. Connecting Slack, Notion or GitHub will start fresh OAuth flows.
+  </p>
+</div>
+{% endblock %}
