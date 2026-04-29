@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Connect GitHub · townsquare{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <a href="/connections" class="text-sm text-slate-500 hover:text-slate-700">← Connections</a>
+  <h1 class="text-3xl font-semibold tracking-tight mt-4">Connect GitHub</h1>
+  <p class="text-slate-500 mt-2">
+    townsquare uses your <strong>own</strong> GitHub personal access token. It only sees what your GitHub account can see —
+    nothing more, nothing less.
+  </p>
+
+  <div class="mt-8 bg-white border border-slate-200 rounded-xl p-6">
+    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">How to generate a PAT</h2>
+    <ol class="mt-3 space-y-2 text-sm text-slate-700 list-decimal list-inside">
+      <li>Open <a href="https://github.com/settings/tokens" target="_blank" rel="noopener" class="text-slate-900 underline">github.com/settings/tokens</a></li>
+      <li>Click <strong>Generate new token → Fine-grained</strong> (recommended)</li>
+      <li>Resource owner: pick your work org if you want org-private repo access</li>
+      <li>Repository access: choose what townsquare may search</li>
+      <li>Repository permissions: <em>Contents = read</em>, <em>Issues = read</em>, <em>Pull requests = read</em>, <em>Metadata = read</em></li>
+      <li>Generate, copy the token (starts with <code class="bg-slate-100 px-1 rounded">github_pat_…</code>)</li>
+    </ol>
+  </div>
+
+  <form method="POST" action="/connections/github/connect" class="mt-8 space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-slate-700">Personal access token</label>
+      <input name="pat" type="password" required autocomplete="off"
+             placeholder="github_pat_..."
+             class="mt-1 w-full p-3 border border-slate-300 rounded-lg font-mono text-sm">
+      <p class="text-xs text-slate-500 mt-1">
+        Stored encrypted at rest. Only townsquare's federation router decrypts it during a query, and only to call GitHub on your behalf.
+      </p>
+    </div>
+    <div class="flex items-center justify-between">
+      <a href="/connections" class="text-sm text-slate-500 hover:text-slate-700">Cancel</a>
+      <button type="submit"
+              class="bg-slate-900 hover:bg-slate-700 text-white px-6 py-2 rounded-lg font-medium transition">
+        Connect
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

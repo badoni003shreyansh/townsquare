@@ -5,7 +5,9 @@ from __future__ import annotations
 from townsquare.connectors.base import Connector
 from townsquare.connectors.calendar import CalendarConnector
 from townsquare.connectors.drive import DriveConnector
+from townsquare.connectors.github import GitHubConnector
 from townsquare.connectors.gmail import GmailConnector
+from townsquare.connectors.slack import SlackConnector
 
 
 def default_registry() -> dict[str, Connector]:
@@ -13,4 +15,6 @@ def default_registry() -> dict[str, Connector]:
         "gmail": GmailConnector(),
         "drive": DriveConnector(),
         "calendar": CalendarConnector(),
+        "slack": SlackConnector(),
+        "github": GitHubConnector(),
     }

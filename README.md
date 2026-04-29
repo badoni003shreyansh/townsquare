@@ -91,14 +91,16 @@ That's it. Your colleagues can now sign in with their company Google accounts.
 |---|---|
 | Google Workspace SSO with domain restriction | ✓ |
 | Gmail / Drive / Calendar connectors | ✓ |
+| **Slack** — per-user xoxp tokens (not bot-token; preserves per-user privacy) | ✓ |
+| **GitHub** — per-user fine-grained PAT | ✓ |
 | Per-user encrypted OAuth token storage | ✓ |
 | Federation router (parallel + budget + isolated failures + attribution) | ✓ |
 | Central agent (Anthropic Claude with tool use) | ✓ |
-| HTMX + Tailwind web UI | ✓ |
+| HTMX + Tailwind web UI with connect/disconnect flows | ✓ |
 | Wiki with versioning + agent read/write tools | ✓ |
 | Admin CLI (promote, deactivate, forget) | ✓ |
 | Docker Compose self-host | ✓ |
-| 23 unit tests, ruff clean | ✓ |
+| 41 unit tests, ruff clean | ✓ |
 
 See [ROADMAP.md](ROADMAP.md) for v0.2+ (Slack, Notion, GitHub, OpenTelemetry, Helm).
 

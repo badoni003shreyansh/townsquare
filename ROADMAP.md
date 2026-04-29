@@ -53,10 +53,13 @@ This is a living document. Weeks slide based on real progress.
 - Glossary: org-defined terms
 - Agent tools wired
 
-## Week 6 — Slack + dogfood prep
+## Week 6 — Slack + GitHub + dogfood prep (DONE — 2026-04-29)
 
-- Slack OAuth (per-user user-token, not bot-token, for per-user privacy)
-- `query_user_slack` tool: search messages, threads, DMs (only the user's)
+- Slack OAuth (per-user xoxp user-token, not bot-token, for per-user privacy)
+- `query_user_slack`: search messages, threads, DMs (only the user's)
+- GitHub via fine-grained PAT (per-user)
+- `query_user_github`: search issues + PRs in repos the user can see
+- Connect/disconnect UI flows for both
 - Re-deploy to Zingly staging
 - Onboard 3 Zingly employees as alpha users
 
