@@ -197,6 +197,7 @@ def stats() -> None:
 
     from sqlalchemy import func
 
+    from townsquare.connectors.registry import default_registry
     from townsquare.db import session_scope
     from townsquare.db.models import Connection, QueryLog, User
 
@@ -206,35 +207,32 @@ def stats() -> None:
     with session_scope() as s:
         # Active users
         active_users = (
-            s.query(func.count(User.email)).filter(User.is_active.is_(True)).scalar() or 0
+            s.execute(select(func.count(User.email)).where(User.is_active.is_(True))).scalar() or 0
         )
 
         # Connections per source
-        rows = (
-            s.query(Connection.source, func.count(Connection.id))
-            .filter(Connection.is_active.is_(True))
+        rows = s.execute(
+            select(Connection.source, func.count(Connection.id))
+            .where(Connection.is_active.is_(True))
             .group_by(Connection.source)
-            .all()
-        )
+        ).all()
         conn_map = {k: v for k, v in rows}
 
         # Query stats (last 7 days)
-        total, avg_latency, total_cost = (
-            s.query(
+        total, avg_latency, total_cost = s.execute(
+            select(
                 func.count(QueryLog.id),
                 func.avg(QueryLog.latency_ms),
                 func.sum(QueryLog.cost_usd),
-            )
-            .filter(QueryLog.created_at >= week_ago)
-            .one()
-        )
+            ).where(QueryLog.created_at >= week_ago)
+        ).one()
 
         total = total or 0
         avg_latency = float(avg_latency or 0)
         total_cost = float(total_cost or 0)
 
         # Last query
-        last = s.query(QueryLog).order_by(QueryLog.created_at.desc()).first()
+        last = s.execute(select(QueryLog).order_by(QueryLog.created_at.desc())).scalars().first()
 
         # Output
         click.echo(f"USERS               {active_users} active")
@@ -242,7 +240,13 @@ def stats() -> None:
         click.echo("")
         click.echo("CONNECTIONS")
 
-        for source in ["gmail", "drive", "calendar", "slack", "github"]:
+        # All known connector sources from registry
+        known_sources = sorted(default_registry().keys())
+
+        # Include any DB sources not in registry (defensive)
+        extra_sources = sorted(set(conn_map.keys()) - set(known_sources))
+
+        for source in known_sources + extra_sources:
             count = conn_map.get(source, 0)
             click.echo(f"  {source:<16}{count} users")
 
@@ -256,9 +260,12 @@ def stats() -> None:
         click.echo("LAST QUERY")
 
         if last:
-            email = getattr(last, "user_email", "—")
-            query = getattr(last, "query_text", "")
-            click.echo(f'  {email} — "{query}"')
+            email = last.user_email
+            query = last.query_text
+            delta = now - last.created_at
+            mins = int(delta.total_seconds() // 60)
+            when = f"{mins // 60}h ago" if mins >= 60 else f"{mins}m ago"
+            click.echo(f'  {email}  {when} — "{query}"')
         else:
             click.echo("  —")
 

@@ -126,7 +126,7 @@ def test_admin_stats_populated(fresh_db):
         s.add(QueryLog(
             user_email=user.email,
             query_text="who's working on auth?",
-            latency_ms=3.5,
+            latency_ms=4200.0,
             cost_usd=0.02,
             created_at=datetime.utcnow()
         ))
@@ -140,3 +140,4 @@ def test_admin_stats_populated(fresh_db):
     assert "1 users" in out.output
     assert "avg latency" in out.output
     assert "who's working on auth?" in out.output
+    
