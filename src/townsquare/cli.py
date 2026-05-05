@@ -190,5 +190,85 @@ def _redact_db_url(url: str) -> str:
     return url
 
 
+@admin.command(name="stats")
+def stats() -> None:
+    """Print usage summary."""
+    from datetime import datetime, timedelta
+
+    from sqlalchemy import func
+
+    from townsquare.connectors.registry import default_registry
+    from townsquare.db import session_scope
+    from townsquare.db.models import Connection, QueryLog, User
+
+    now = datetime.utcnow()
+    week_ago = now - timedelta(days=7)
+
+    with session_scope() as s:
+        # Active users
+        active_users = (
+            s.execute(select(func.count(User.email)).where(User.is_active.is_(True))).scalar() or 0
+        )
+
+        # Connections per source
+        rows = s.execute(
+            select(Connection.source, func.count(Connection.id))
+            .where(Connection.is_active.is_(True))
+            .group_by(Connection.source)
+        ).all()
+        conn_map = {k: v for k, v in rows}
+
+        # Query stats (last 7 days)
+        total, avg_latency, total_cost = s.execute(
+            select(
+                func.count(QueryLog.id),
+                func.avg(QueryLog.latency_ms),
+                func.sum(QueryLog.cost_usd),
+            ).where(QueryLog.created_at >= week_ago)
+        ).one()
+
+        total = total or 0
+        avg_latency = float(avg_latency or 0)
+        total_cost = float(total_cost or 0)
+
+        # Last query
+        last = s.execute(select(QueryLog).order_by(QueryLog.created_at.desc())).scalars().first()
+
+        # Output
+        click.echo(f"USERS               {active_users} active")
+        click.echo(f"QUERIES this week   {total}")
+        click.echo("")
+        click.echo("CONNECTIONS")
+
+        # All known connector sources from registry
+        known_sources = sorted(default_registry().keys())
+
+        # Include any DB sources not in registry (defensive)
+        extra_sources = sorted(set(conn_map.keys()) - set(known_sources))
+
+        for source in known_sources + extra_sources:
+            count = conn_map.get(source, 0)
+            click.echo(f"  {source:<16}{count} users")
+
+        click.echo("")
+        click.echo("QUERIES (last 7 days)")
+        click.echo(f"  total             {total}")
+        click.echo(f"  avg latency       {avg_latency / 1000:.1f}s")
+        click.echo(f"  total cost USD    ${total_cost:.2f}")
+
+        click.echo("")
+        click.echo("LAST QUERY")
+
+        if last:
+            email = last.user_email
+            query = last.query_text
+            delta = now - last.created_at
+            mins = int(delta.total_seconds() // 60)
+            when = f"{mins // 60}h ago" if mins >= 60 else f"{mins}m ago"
+            click.echo(f'  {email}  {when} — "{query}"')
+        else:
+            click.echo("  —")
+
+
 if __name__ == "__main__":
     main()
